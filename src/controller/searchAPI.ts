@@ -41,25 +41,29 @@ export const searchLGAsByState = async (req: Request, res: Response): Promise<vo
   }
 };
 
+// Get all states with pagination
+export const getAllStates = async (req: Request, res: Response): Promise<void> => {
+  const { page = 1, perPage = 10 } = req.query;
+  const skipCount = (Number(page) - 1) * Number(perPage);
 
-// Additional metadata: Filter and sort states or LGAs by specified metadata
-// export const filterAndSortByMetadata = async (req: Request, res: Response): Promise<void> => {
-//   const { metadata, value, sortBy, sortOrder } = req.query;
+  try {
+    const totalCount = await State.countDocuments();
+    const states: StateDocument[] = await State.find()
+      .skip(skipCount)
+      .limit(Number(perPage));
 
-//   try {
-//     const query: any = {};
-//     query[metadata] = value;
+    res.json({
+      states,
+      totalCount,
+      currentPage: Number(page),
+      totalPages: Math.ceil(totalCount / Number(perPage)),
+    });
+  } catch (error) {
+    console.error('Error getting all states:', error);
+    throw new ApiError(500, 'An error occurred while retrieving all states');
+  }
+};
 
-//     let sortQuery: any = {};
-//     if (sortBy) {
-//       sortQuery[sortBy] = sortOrder === 'desc' ? -1 : 1;
-//     }
 
-//     const states: StateDocument[] = await State.find(query).sort(sortQuery);
-//     res.json(states);
-//   } catch (error) {
-//     console.error('Error filtering and sorting by metadata:', error);
-//     throw new ApiError(500, 'An error occurred while filtering and sorting by metadata');
-//   }
-// };
+
 
