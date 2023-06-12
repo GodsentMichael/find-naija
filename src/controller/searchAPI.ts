@@ -65,5 +65,20 @@ export const getAllStates = async (req: Request, res: Response): Promise<void> =
 };
 
 
+// Get information about a specific state
+export const getOneState = async (req: Request, res: Response): Promise<void> => {
+  const { state } = req.params;
+  try {
+    const stateFound: StateDocument | null = await State.findOne({ state: state });
+    if (stateFound) {
+      res.json(stateFound);
+    } else {
+      throw new ApiError(404, 'State not found');
+    }
+  } catch (error) {
+    console.error('Error getting state:', error);
+    throw new ApiError(500, 'An error occurred while retrieving state information');
+  }
+};
 
 
