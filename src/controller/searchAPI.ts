@@ -81,4 +81,37 @@ export const getOneState = async (req: Request, res: Response): Promise<void> =>
   }
 };
 
+// Get all LGAs
+export const getAllLGAs = async (req: Request, res: Response): Promise<void> => {
+  try {
+    let query = State.find({}, 'lgas');
+
+    // Pagination
+    const page = parseInt(req.query.page as string) || 1;
+    const perPage = parseInt(req.query.perPage as string) || 10;
+    const skip = (page - 1) * perPage;
+    query = query.skip(skip).limit(perPage);
+
+    // Sorting
+    const sortBy = req.query.sortBy as string;
+    if (sortBy) {
+      query = query.sort(sortBy);
+    }
+
+    // Filtering
+    const filter = req.query.filter as string;
+    if (filter) {
+      query = query.find({ lgas: { $regex: filter, $options: 'i' } });
+    }
+
+    // Execute the query
+    const lgas = await query.exec();
+
+    res.json(lgas);
+  } catch (error) {
+    console.error('Error getting all LGAs:', error);
+    throw new ApiError(500, 'An error occurred while retrieving all LGAs');
+  }
+};
+
 
