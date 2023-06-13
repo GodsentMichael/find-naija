@@ -43,25 +43,48 @@ export const searchLGAsByState = async (req: Request, res: Response): Promise<vo
 
 // Get all states with pagination
 export const getAllStates = async (req: Request, res: Response): Promise<void> => {
-  const { page = 1, perPage = 10 } = req.query;
-  const skipCount = (Number(page) - 1) * Number(perPage);
-
   try {
-    const totalCount = await State.countDocuments();
-    const states: StateDocument[] = await State.find()
-      .skip(skipCount)
-      .limit(Number(perPage));
+    const { sortBy, fields } = req.query;
+    const sortOptions = getSortOptions(sortBy as string);
+    const projection = getProjection(fields as string);
 
-    res.json({
-      states,
-      totalCount,
-      currentPage: Number(page),
-      totalPages: Math.ceil(totalCount / Number(perPage)),
-    });
+    const states: StateDocument[] = await State.find({}, projection).sort(sortOptions).exec();
+    res.json(states);
   } catch (error) {
     console.error('Error getting all states:', error);
     throw new ApiError(500, 'An error occurred while retrieving all states');
   }
+};
+
+const getSortOptions = (sortBy: string): Record<string, any> => {
+  const sortOptions: Record<string, any> = {};
+
+  if (sortBy) {
+    const fields = sortBy.split(',');
+    fields.forEach((field) => {
+      let sortOrder = 1;
+      if (field.startsWith('-')) {
+        sortOrder = -1;
+        field = field.substring(1);
+      }
+      sortOptions[field] = sortOrder;
+    });
+  }
+
+  return sortOptions;
+};
+
+const getProjection = (fields: string): Record<string, any> => {
+  const projection: Record<string, any> = {};
+
+  if (fields) {
+    const fieldList = fields.split(',');
+    fieldList.forEach((field) => {
+      projection[field] = 1;
+    });
+  }
+
+  return projection;
 };
 
 
@@ -114,4 +137,23 @@ export const getAllLGAs = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+// Get information about a specific LGA
+export const getOneLGA = async (req: Request, res: Response): Promise<void> => {
+  const { lga } = req.params;
+  try {
+    const state: StateDocument | null = await State.findOne({ lgas: lga });
+    if (state) {
+      const lgaInfo = {
+        state: state.state,
+        lgas: lga
+      };
+      res.json(lgaInfo);
+    } else {
+      throw new ApiError(404, 'LGA not found');
+    }
+  } catch (error) {
+    console.error('Error getting LGA:', error);
+    throw new ApiError(500, 'An error occurred while retrieving LGA information');
+  }
+};
 

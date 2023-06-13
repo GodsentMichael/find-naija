@@ -3,7 +3,7 @@ import User, { UserDocument } from '../model/userModel';
 import ApiError from '../utils/apiError';
 
 interface CustomRequest extends Request {
-  user?: UserDocument; // Define the 'user' property on the Request object
+  user?: UserDocument; //This is to define the 'user' property on the Request object
 }
 
 export const authenticateApiKey = async (req: CustomRequest, res: Response, next: NextFunction) => {
@@ -11,7 +11,7 @@ export const authenticateApiKey = async (req: CustomRequest, res: Response, next
     const apiKey = req.headers['x-api-key']; // Assuming the API key is passed in the 'x-api-key' header
 
     if (!apiKey) {
-      throw new ApiError(401, 'API key is missing', 'MissingApiKey');
+      throw new ApiError(401, "You've not provided an API Key", 'MissingApiKey');
     }
 
     // Find the user by the API key
