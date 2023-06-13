@@ -5,6 +5,7 @@ import { generateUserId } from '../utils/userUtils'; // Import the utility funct
 export const registerUser = async (
   username: string,
   email: string,
+  password: string,
   apiKey: string,
   expirationDate: Date
 ): Promise<UserDocument> => {
@@ -16,7 +17,7 @@ export const registerUser = async (
       throw new ApiError(400, 'User with this email already exists', 'UserExists');
     }
 
-    const user = new User({ userId, username, email, apiKey, apiKeyExpiration: expirationDate });
+    const user = new User({ userId, username, password,email, apiKey, apiKeyExpiration: expirationDate });
     await user.save();
 
     return user;

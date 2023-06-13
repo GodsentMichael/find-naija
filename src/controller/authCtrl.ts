@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { generateApiKey } from '../utils/apiKeyUtils';
 import ApiError from '../utils/apiError';
+import bcrypt from 'bcrypt';
 import { registerUser } from '../services/registerUser';
 import sendMail from '../utils/sendMail';
 
@@ -8,7 +9,7 @@ const EXPIRATION_DAYS = 30; // Number of days until the API key expires
 
 export const registerUserCtrl = async (req: Request, res: Response) => {
   try {
-    const { username, email } = req.body;
+    const { username, email, password } = req.body;
 
     // Input validation
     if (!username) {
@@ -23,11 +24,19 @@ export const registerUserCtrl = async (req: Request, res: Response) => {
       });
     }
 
+    if (!password){
+      throw new ApiError(400, 'Password is required', 'ValidationError', {
+        password: ['Password is required'],
+      });
+    }
+    //Hash the user's password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const apiKey = generateApiKey();
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + EXPIRATION_DAYS);
 
-    const user = await registerUser(username, email, apiKey, expirationDate);
+    const user = await registerUser(username, email,hashedPassword, apiKey, expirationDate);
 
     // Send email to the user containing the API key and instructions
     const message = `Hi ${username},\n\nThank you for signing up!🙏\n\nYour API key is: ${user.apiKey}\n\nTo access protected routes, include this API key in the 'x-api-key' header of your requests.\n\nPlease keep your API key safe and do not share it with others.\n\nIf you have any questions or need further assistance, feel free to reach out.\n\nBest regards,\nThe API Team`;
