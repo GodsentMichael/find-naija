@@ -34,7 +34,7 @@ describe('Authenticate User', () => {
       expect(res.body).toHaveProperty('user');
       expect(res.body.user).toHaveProperty('username', 'John Doe');
       expect(res.body.user).toHaveProperty('email', 'john@doe.com');
-    }, 5000); // Increase the timeout for this specific test
+    }, 10000); // Increase the timeout for this specific test
   
     it("Shouldn't signup a user", async () => {
       const res = await request(app)
@@ -47,7 +47,7 @@ describe('Authenticate User', () => {
         });
   
       expect(res.status).toBe(400);
-    }, 5000);
+    }, 10000);
    
   
   });

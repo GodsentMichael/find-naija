@@ -5,7 +5,7 @@ import ApiError from '../utils/apiError';
 // Search regions
 export const searchRegions = async (req: Request, res: Response): Promise<void> => {
   try {
-    const regions: string[] = await State.distinct('geo_politcal_zone');
+    const regions: StateDocument[] = await State.distinct('geo_politcal_zone');
     res.json(regions);
   } catch (error) {
     console.error('Error searching regions:', error);
