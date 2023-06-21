@@ -3,6 +3,8 @@ import rateLimit from 'express-rate-limit'
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import swaggerjsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 import authRoutes from './src/routes/authRoute'
 import errorHandler from './src/middlewares/errorHandler';
 import db from './src/configs/dbConfig';
@@ -26,6 +28,34 @@ app.use(limiter)
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const options = {
+	definition: {
+		openapi: '3.0.0',
+		info: {
+			title: 'Find Naija API Documentation',
+			version: '1.0.0',
+			description: 'This is a capstone project from AltSchool Africa, the project was carried out using typescript and express both running on Nodejs',
+			contact: {
+				name: 'Gosent Michael',
+				email: 'godsentpaulyerobiri@gmail.com',
+				url: 'https://github.com/godsentmichael',
+            },
+		},
+		servers: [
+			{
+				url: 'http://localhost:5050',
+			},
+		],
+	},
+	apis: ['./src/routes/*.ts'],
+};
+
+const swaggerSpec = swaggerjsdoc(options);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+
+	
+app.get('/', (req, res) => res.send('Welcome to the API'));
 
 db()
 authRoutes(app)
