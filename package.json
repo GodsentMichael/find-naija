@@ -5,6 +5,7 @@
   "main": "app.ts",
   "scripts": {
     "start": "nodemon --exec ts-node ./public/server.ts",
+    "build": "tsc",
     "test": "jest --watch --detectOpenHandles"
   },
   "repository": {
