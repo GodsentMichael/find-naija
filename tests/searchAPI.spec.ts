@@ -49,7 +49,7 @@ describe('Search API Routes', () => {
     expect(res.body).toEqual(expect.arrayContaining(['Aboh-Mbaise', 'Ahiazu-Mbaise', 'Ehime-Mbano']));
   });
 
-  // TODO: Confirm this from your postman request.👇
+
 
   // Test for getting all states
   it('Should get all states', async () => {
