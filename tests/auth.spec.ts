@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { connect } from './database';
-import app from '../app';
+import app from '../public/app';
 import User from '../src/model/userModel';
 
 describe('Authenticate User', () => {
