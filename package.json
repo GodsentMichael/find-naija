@@ -6,8 +6,7 @@
   "scripts": {
     "start": "nodemon --exec ts-node ./public/server.ts",
     "build": "tsc",
-    "test": "jest --watch --detectOpenHandles",
-    "postinstall": "npm install -g typescript"
+    "test": "jest --watch --detectOpenHandles"
   },
   "repository": {
     "type": "git",
